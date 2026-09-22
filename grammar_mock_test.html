@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Grammar Mock Test</title>
+<style>
+  *{box-sizing:border-box}
+  body{font-family:Arial,Helvetica,sans-serif;background:#f3f6fb;color:#1f2937;margin:0}
+  .container{max-width:900px;margin:30px auto;padding:20px}
+  .card{background:#fff;border-radius:14px;padding:28px;margin-bottom:20px;box-shadow:0 4px 16px rgba(0,0,0,.08)}
+  h1{margin-top:0;text-align:center;color:#1e3a8a}
+  h2{color:#1e3a8a;border-bottom:2px solid #dbeafe;padding-bottom:8px}
+  .info{display:grid;grid-template-columns:1fr 1fr;gap:15px}
+  label{font-weight:600}
+  input[type=text]{width:100%;padding:11px;border:1px solid #cbd5e1;border-radius:8px;margin-top:6px;font-size:16px}
+  .question{margin:22px 0}
+  .question p{font-weight:600}
+  .option{display:block;margin:9px 0;padding:9px 12px;border-radius:8px}
+  .option:hover{background:#f1f5f9}
+  .word-order{background:#f8fafc;padding:12px;border-radius:8px;margin:8px 0;font-style:italic}
+  .answer-input{width:100%;padding:11px;border:1px solid #cbd5e1;border-radius:8px;font-size:16px}
+  button{display:block;width:100%;padding:14px;background:#1e40af;color:white;border:0;border-radius:10px;font-size:18px;font-weight:bold;cursor:pointer}
+  button:hover{background:#1d4ed8}
+  #result{display:none}
+  .score{font-size:26px;font-weight:bold;text-align:center;color:#166534}
+  .feedback{margin-top:20px}
+  .correct{background:#dcfce7;border-left:5px solid #16a34a;padding:10px;margin:8px 0}
+  .incorrect{background:#fee2e2;border-left:5px solid #dc2626;padding:10px;margin:8px 0}
+  .section-score{font-weight:bold;margin:10px 0}
+  .small{font-size:14px;color:#64748b}
+  @media(max-width:650px){.info{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="card">
+    <h1>Grammar Mock Test</h1>
+    <p class="small">Present Simple • Present Continuous • Can/Can't • Verb + -ing • Subject & Object Pronouns</p>
+    <div class="info">
+      <div><label>Name</label><input type="text" id="studentName" placeholder="Enter your name"></div>
+      <div><label>Class</label><input type="text" id="studentClass" placeholder="Enter your class"></div>
+    </div>
+  </div>
+
+  <form id="testForm">
+  <div class="card">
+    <h2>Task 1. Choose a, b, or c.</h2>
+    <div id="task1"></div>
+  </div>
+
+  <div class="card">
+    <h2>Task 2. Put the words in the correct order.</h2>
+    <p class="small">Type the complete sentence or question.</p>
+    <div id="task2"></div>
+  </div>
+
+  <div class="card">
+    <h2>Task 3. Find and correct the mistake.</h2>
+    <p class="small">Type the corrected word or words.</p>
+    <div id="task3"></div>
+  </div>
+
+  <div class="card">
+    <button type="submit">Submit Test & Check Answers</button>
+  </div>
+  </form>
+
+  <div class="card" id="result">
+    <h2>Results</h2>
+    <div id="resultContent"></div>
+  </div>
+</div>
+
+<script>
+const task1 = [
+["My sister _______ English every evening.",["study","studies","is study"],1],
+["Look! The children _______ football in the park.",["play","plays","are playing"],2],
+["_______ you swim?",["Are","Can","Do"],1],
+["I love _______ photos when I travel.",["take","taking","to taking"],1],
+["Sarah is my friend. I often talk to _______.",["she","her","hers"],1],
+["We _______ TV at the moment.",["don't watch","aren't watching","doesn't watch"],1],
+["He _______ drive a car, but he can ride a motorbike.",["can't","doesn't","isn't"],0],
+["My parents don't mind _______ at home.",["cook","cooking","cooks"],1],
+["_______ your brother like playing computer games?",["Is","Does","Can"],1],
+["Anna is very friendly. Everyone likes _______.",["she","her","they"],1]
+];
+
+const task2 = [
+["every / morning / to school / walks / brother / My","My brother walks to school every morning."],
+["at the moment / is / in the kitchen / My mother / dinner / cooking","My mother is cooking dinner in the kitchen at the moment."],
+["can / very well / speak / My best friend / English","My best friend can speak English very well."],
+["playing / after school / don't mind / I / with my friends / football","I don't mind playing football with my friends after school."],
+["every weekend / her grandparents / visits / She / in the countryside","She visits her grandparents in the countryside every weekend."],
+["are / this evening / What / doing / you / after class","What are you doing after class this evening?"],
+["doesn't / watching / My brother / like / scary movies","My brother doesn't like watching scary movies."],
+["can / with this exercise / help / me / You","Can you help me with this exercise?"],
+["usually / the bus / takes / to work / My father / in the morning","My father usually takes the bus to work in the morning."],
+["at the moment / their homework / are / The students / doing / in the classroom","The students are doing their homework in the classroom at the moment."],
+["loves / with her friends / She / English / speaking","She loves speaking English with her friends."],
+["every Saturday / football / They / with their classmates / play","They play football with their classmates every Saturday."]
+];
+
+const task3 = [
+["She work in a hospital.","works"],
+["They is watching TV now.","are"],
+["I can speaking English.","speak"],
+["He loves play football.","playing"],
+["My brother doesn't like cook.","cooking"],
+["We are talking to she.","her"],
+["Does you like coffee?","Do"],
+["Look! The dog run in the garden.","is running"],
+["I don't mind to wait for you.","waiting"],
+["Sarah helps I with my homework.","me"]
+];
+
+function render(){
+  document.getElementById("task1").innerHTML = task1.map((q,i)=>`
+    <div class="question">
+      <p>${i+1}. ${q[0]}</p>
+      ${q[1].map((o,j)=>`<label class="option"><input type="radio" name="t1_${i}" value="${j}"> ${String.fromCharCode(97+j)}. ${o}</label>`).join("")}
+    </div>`).join("");
+
+  document.getElementById("task2").innerHTML = task2.map((q,i)=>`
+    <div class="question">
+      <p>${i+1}. Put the words in order:</p>
+      <div class="word-order">${q[0]}</div>
+      <input class="answer-input" type="text" id="t2_${i}" autocomplete="off">
+    </div>`).join("");
+
+  document.getElementById("task3").innerHTML = task3.map((q,i)=>`
+    <div class="question">
+      <p>${i+1}. ${q[0]}</p>
+      <input class="answer-input" type="text" id="t3_${i}" autocomplete="off" placeholder="Write the correction">
+    </div>`).join("");
+}
+
+function normalize(s){
+  return s.toLowerCase()
+    .replace(/[’']/g,"'")
+    .replace(/[.!?]/g,"")
+    .replace(/\s+/g," ")
+    .trim();
+}
+
+function showResults(){
+  let t1score=0,t2score=0,t3score=0;
+  let html="";
+
+  html += `<div class="section-score">Task 1: `;
+  const t1feedback=[];
+  task1.forEach((q,i)=>{
+    const selected=document.querySelector(`input[name="t1_${i}"]:checked`);
+    const correct=q[2];
+    if(selected && Number(selected.value)===correct)t1score++;
+    t1feedback.push(`<div class="${selected && Number(selected.value)===correct?'correct':'incorrect'}">
+      <b>${i+1}.</b> ${selected?`Your answer: ${String.fromCharCode(97+Number(selected.value))}. ${q[1][Number(selected.value)]}`:"No answer"} 
+      — Correct: ${String.fromCharCode(97+correct)}. ${q[1][correct]}
+    </div>`);
+  });
+  html += `${t1score}/10</div>${t1feedback.join("")}`;
+
+  html += `<div class="section-score">Task 2: `;
+  const t2feedback=[];
+  task2.forEach((q,i)=>{
+    const input=document.getElementById(`t2_${i}`).value;
+    const ok=normalize(input)===normalize(q[1]);
+    if(ok)t2score++;
+    t2feedback.push(`<div class="${ok?'correct':'incorrect'}">
+      <b>${i+1}.</b> Your answer: ${input||"No answer"}<br>
+      Correct answer: <b>${q[1]}</b>
+    </div>`);
+  });
+  html += `${t2score}/12</div>${t2feedback.join("")}`;
+
+  html += `<div class="section-score">Task 3: `;
+  const t3feedback=[];
+  task3.forEach((q,i)=>{
+    const input=document.getElementById(`t3_${i}`).value;
+    const ok=normalize(input)===normalize(q[1]);
+    if(ok)t3score++;
+    t3feedback.push(`<div class="${ok?'correct':'incorrect'}">
+      <b>${i+1}.</b> Your answer: ${input||"No answer"} — Correct: <b>${q[1]}</b>
+    </div>`);
+  });
+  html += `${t3score}/10</div>${t3feedback.join("")}`;
+
+  const total=t1score+t2score+t3score;
+  const max=32;
+  const percent=Math.round(total/max*100);
+  html = `<div class="score">${total} / ${max} (${percent}%)</div>` +
+         `<p style="text-align:center"><b>${document.getElementById("studentName").value || "Student"}</b></p>` +
+         `<div class="feedback">${html}</div>`;
+
+  document.getElementById("resultContent").innerHTML=html;
+  document.getElementById("result").style.display="block";
+  document.getElementById("result").scrollIntoView({behavior:"smooth"});
+}
+
+document.getElementById("testForm").addEventListener("submit",function(e){
+  e.preventDefault();
+  showResults();
+});
+render();
+</script>
+</body>
+</html>
